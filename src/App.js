@@ -385,5 +385,5 @@ export default function App() {
   );
 }
 
-// FILTERED THROUGH THE FUCKING USEEFFECT FETCH FUNCTION
+
 
