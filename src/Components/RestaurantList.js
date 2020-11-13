@@ -20,9 +20,8 @@ export default function RestaurantList({
               <br />
 
               <div style={{ color: "gold" }}>
-                {place.rating}{" "}
+                {place.rating}
                 <span>
-                  {" "}
                   <StarRatings
                     rating={place.rating}
                     starDimension="20px"

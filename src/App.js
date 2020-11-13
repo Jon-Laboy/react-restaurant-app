@@ -42,7 +42,6 @@ export default function App() {
 
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState(null);
-  // const [pannedNearby, setPannedNearby] = useState([]); 
 
   const [firstRating, setFirstRating] = useState(0);
   const [secondRating, setSecondRating] = useState(5);
@@ -52,14 +51,10 @@ export default function App() {
 
   const [map, setMap] = useState(null)
 
-  // const [NEviewportLat, setNEviewportLat] = useState(null)
-  // const [NEviewportLng, setNEviewportLng] = useState(null)
+  const [permUpdated, setPermUpdated] = useState(null)
 
-  // const [SWviewportLat, setSWviewportLat] = useState(null)
-  // const [SWviewportLng, setSWviewportLng] = useState(null)
-
-  const [newCenterLat, setNewCenterLat] = useState(null)
-  const [newCenterLng, setNewCenterLng] = useState(null)
+  // const [newCenterLat, setNewCenterLat] = useState(null)
+  // const [newCenterLng, setNewCenterLng] = useState(null)
 
   const reviewsArray = [
     `"Food/service was great!"`,
@@ -68,60 +63,23 @@ export default function App() {
     `"Did not have a great experience"`
   ];
 
-  
+
   const onLoad = React.useCallback(function callback(map) {
-    // const bounds = new window.google.maps.LatLngBounds();
-    // map.fitBounds(bounds);
-    // setMap(map)
-    // setNEviewportLat(bounds.getNorthEast().lat())
-    // setNEviewportLng(bounds.getNorthEast().lng())
-    map.addListener("dragend",() => {
-  
+ //GET NEW CENTER AFTER PANNING TO GET OTHER RESTAURANTS IN NEW LOCATION 
+    map.addListener("dragend", () => {
+
       let newLat = map.getCenter().lat();
       let newLng = map.getCenter().lng();
-      // setNewCenterLat(newLat)
-      // setNewCenterLng(newLng)
-     map.setCenter({lat:newLat, lng:newLng})
-     console.log(newLat)
-     console.log(newLng)
-     setUserState((prevState) => ({
-      currentLatLng: {
-        ...prevState.currentLatLng,
-        lat: newLat,
-        lng: newLng
-      }
-    }));
 
-      // console.log(map.getCenter().lat())
-      // console.log(map.getCenter().lng())
-      // setNewCenterLat(map.getCenter().lat())
-      // setNewCenterLng(map.getCenter().lng())
+      setUserState((prevState) => ({
+        currentLatLng: {
+          ...prevState.currentLatLng,
+          lat: newLat,
+          lng: newLng
+        }
+      }));
     })
 
-   
-    // console.log(bounds.getNorthEast().lat())
-    // console.log(bounds.getNorthEast().lng())
-
-    // map.addListener('idle',function(){
-    //   if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
-    //     //do what you want to
-    //     setNewCenterLat(map.getCenter().lat())
-    //   setNewCenterLng(map.getCenter().lng())
-    //   }
-    //   if(!this.get('dragging')){
-    //    this.set('oldCenter',this.getCenter())
-    //   }
-
-    // });
-
-    // map.addListener(map,'dragstart',function(){
-    //   this.set('dragging',true);          
-    // });
-
-    // map.addListener(map,'dragend',function(){
-    //   this.set('dragging',false);
-    //   map.event.trigger(this,'idle',{});
-    // });
   }, [])
 
   const onUnmount = React.useCallback(function callback(map) {
@@ -138,7 +96,7 @@ export default function App() {
       }
     ]);
   }, []);
-  
+
 
 
   // USEEFFECT TO FETCH NEARBY RESTAURANTS
@@ -148,6 +106,7 @@ export default function App() {
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userState.currentLatLng.lat},${userState.currentLatLng.lng}&radius=6047&type=restaurant&key=AIzaSyDyb_aKsyq5CtMO83PKMbTVL79kCLTxqc8`
       );
       const data = await response.json();
+      setPermUpdated(true)
       // console.log(data)
       const filteredRatings =
         data.results &&
@@ -156,7 +115,7 @@ export default function App() {
             ? place
             : null
         );
-      // console.log(filteredRatings);
+      //  console.log(filteredRatings);
       setNearbyRestaurants(filteredRatings);
     }
     fetchRestaurants();
@@ -167,26 +126,6 @@ export default function App() {
     secondRating
   ]);
 
-  // USEEFFECT TO FETCH NEARBY RESTAURANTS AFTER PANNING 
-  // useEffect(() => {
-  //   async function fetchPanned() {
-  //     const response = await fetch(
-  //       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${newPlace.lat},${newPlace.lng}&radius=6047&type=restaurant&key=AIzaSyDyb_aKsyq5CtMO83PKMbTVL79kCLTxqc8`
-  //     );
-  //     const data = await response.json();
-  //     // console.log(data)
-  //     const filteredRatings =
-  //       data.results &&
-  //       data.results.filter((place) =>
-  //         place.rating >= firstRating && place.rating <= secondRating
-  //           ? place
-  //           : null
-  //       );
-  //     // console.log(filteredRatings);
-  //     setPannedNearby(filteredRatings);
-  //   }
-  //   fetchPanned();
-  // }, []);
 
   // SHOW USER'S GEO-LOCATION
   function showCurrentLocation() {
@@ -222,17 +161,6 @@ export default function App() {
         center={center}
         options={options}
         onClick={onMapClick}
-        // onLoad={map => {
-        //   const bounds = new window.google.maps.LatLngBounds();
-        //   const nEastLat= bounds.getNorthEast().lat();
-        //   const nEastLng = bounds.getNorthEast().lng();
-        //   console.log(nEastLat)
-        //   console.log(nEastLng)
-        //   console.log('now southwest')
-        //   console.log(bounds.getSouthWest().lat)
-        //   console.log(bounds.getSouthWest().lng)
-          
-        // }}
         onLoad={onLoad}
         onUnmount={onUnmount}
         zoom={13}
@@ -257,6 +185,7 @@ export default function App() {
             nearbyRestaurants={nearbyRestaurants}
             newPlaceLat={place.lat}
             newPlaceLng={place.lng}
+            permUpdated={permUpdated}
           />
         ))}
 
@@ -284,20 +213,6 @@ export default function App() {
             setNewPlaceSelected={setNewPlaceSelected}
           />
         ) : null} */}
-        
-        {/* NEARBY RESTAURANTS AS YOU PAN MAP? */}
-        {/* {newPlace.map(place => (
-          <Marker
-            position={{
-              lat:place.geometry.location.lat,
-              lng: place.geometry.location.lng
-            }}
-            icon={{
-              url:"/restaurant-icon.png",
-              scaledSize: new window.google.maps.Size(40, 40)
-            }}
-          />
-        ))} */}
 
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
@@ -356,10 +271,10 @@ export default function App() {
                 {selectedRestaurants.rating >= 4
                   ? reviewsArray[0]
                   : selectedRestaurants.rating >= 3.5
-                  ? reviewsArray[1]
-                  : selectedRestaurants.rating >= 3
-                  ? reviewsArray[2]
-                  : reviewsArray[3]}
+                    ? reviewsArray[1]
+                    : selectedRestaurants.rating >= 3
+                      ? reviewsArray[2]
+                      : reviewsArray[3]}
               </div>
             </div>
           </InfoWindow>

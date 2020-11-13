@@ -1,13 +1,6 @@
 import React, { Component } from "react";
 import Modal from "react-awesome-modal";
-//NEED TO RETURN VALUES IN AN OBJECT AND ADD THAT
-//TO THE 'NEARBYRESTAURANTS ARRAY
-//WITH THE SAME PROPERTIES ..IE-0 place.name/place.vicinity/place.rating...etc
-//  OBJ= {
-//  name: this.state.name,
-//  rating: this.state.rating,
-//  vicinity: this.state.address
-// }
+
 class AddNewModal extends Component {
   constructor(props) {
     super(props);
@@ -18,9 +11,9 @@ class AddNewModal extends Component {
       visible: true
     };
     this.handleChange = this.handleChange.bind(this);
-    this.submitForm = this.submitForm.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.submitForm = this.submitForm.bind(this);
   }
 
   openModal() {
@@ -31,7 +24,8 @@ class AddNewModal extends Component {
 
   closeModal() {
     this.setState({
-      visible: false
+      visible: false,
+      permUpdated: false
     });
   }
 
@@ -41,8 +35,8 @@ class AddNewModal extends Component {
     });
   }
 
-  submitForm(event) {
-    event.preventDefault();
+  submitForm(e) {
+    e.preventDefault();
 
     let newRestaurantObj = {
       name: this.state.name,
@@ -57,8 +51,9 @@ class AddNewModal extends Component {
       }
     };
     this.closeModal();
-    return this.props.nearbyRestaurants.unshift(newRestaurantObj);
     //UNSHIFT VALUES TO RESTAURANTLIST
+    return this.props.nearbyRestaurants.unshift(newRestaurantObj);
+    
   }
   render() {
     return (
@@ -105,7 +100,7 @@ class AddNewModal extends Component {
                 onChange={this.handleChange}
               />
             </div>
-            <button onClick={this.submitForm} className="submit-button" type="submit">
+            <button type="submit" className="submit-button">
               submit
             </button>
           </form>
@@ -116,11 +111,4 @@ class AddNewModal extends Component {
 }
 export default AddNewModal;
 
-// {
-/* <textarea
-style={{ padding: "1rem", borderRadius: "3px" }}
-placeholder="Leave a review.."
-// value={userReview}
-// onChange={textAreaValue}
-/> */
-// }
+
