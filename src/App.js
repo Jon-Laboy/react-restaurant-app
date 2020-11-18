@@ -13,6 +13,8 @@ import FilterRatings from "./Components/FilterRatings";
 import RestaurantList from "./Components/RestaurantList";
 
 // GLOBAL VARIABLES
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+
 const libraries = ["places"];
 
 const mapContainerStyle = {
@@ -29,7 +31,7 @@ const options = {
 // APP COMPONENT
 export default function App() {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDyb_aKsyq5CtMO83PKMbTVL79kCLTxqc8",
+    googleMapsApiKey: API_KEY,
     libraries
   });
 
@@ -38,7 +40,6 @@ export default function App() {
   });
 
   const [newPlace, setNewPlace] = useState([]);
-  // const [newPlaceSelected, setNewPlaceSelected] = useState(null);
 
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState(null);
@@ -49,12 +50,9 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [infoWindowName, setInfoWindowName] = useState("");
 
+
   const [map, setMap] = useState(null)
 
-  const [permUpdated, setPermUpdated] = useState(null)
-
-  // const [newCenterLat, setNewCenterLat] = useState(null)
-  // const [newCenterLng, setNewCenterLng] = useState(null)
 
   const reviewsArray = [
     `"Food/service was great!"`,
@@ -63,28 +61,56 @@ export default function App() {
     `"Did not have a great experience"`
   ];
 
+  // ONLOAD FUNCTION WHERE I GET BOUNDS/////////////////////////////////////////////
 
   const onLoad = React.useCallback(function callback(map) {
- //GET NEW CENTER AFTER PANNING TO GET OTHER RESTAURANTS IN NEW LOCATION 
-    map.addListener("dragend", () => {
 
-      let newLat = map.getCenter().lat();
-      let newLng = map.getCenter().lng();
+    //NEEDED IDLE EVENT TO THEN REQUEST BOUNDS MAKING IT NOT 'UNDEFINED'/////////////////
+    map.addListener('idle', function () {
 
-      setUserState((prevState) => ({
-        currentLatLng: {
-          ...prevState.currentLatLng,
-          lat: newLat,
-          lng: newLng
+      let bounds = map.getBounds();
+
+      let ne = bounds.getNorthEast();
+      let sw = bounds.getSouthWest();
+      let nw = new window.google.maps.LatLng(ne.lat(), sw.lng());
+      let se = new window.google.maps.LatLng(sw.lat(), ne.lng());
+      // console.log(se.lat())
+
+      //FUNCTION TO FIND AREA OF THE BOUNDS AS REFERRED FROM https://stackoverflow.com/questions/34447415/how-to-find-out-the-area-in-google-maps-api /////// 
+      function getDistanceInMeters(location1, location2) {
+        let lat1 = location1.lat();
+        let lon1 = location1.lng();
+
+        let lat2 = location2.lat();
+        let lon2 = location2.lng();
+
+        let R = 6371; // Radius of the earth in km
+        let dLat = deg2rad(lat2 - lat1);
+        let dLon = deg2rad(lon2 - lon1);
+        let a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        let d = R * c; // Distance in km
+        return (d * 1000);
+
+        function deg2rad(deg) {
+          return deg * (Math.PI / 180);
         }
-      }));
-    })
+      }
 
+      let length = getDistanceInMeters(sw, nw);
+      let breadth = getDistanceInMeters(sw, se);
+
+      let area = length * breadth; // in square meters
+
+
+      console.log(area)
+
+    });
   }, [])
 
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null)
-  }, [])
 
   // SET NEW PLACES/MARKERS ON MAPCLICK
   const onMapClick = React.useCallback((e) => {
@@ -98,16 +124,13 @@ export default function App() {
   }, []);
 
 
-
   // USEEFFECT TO FETCH NEARBY RESTAURANTS
   useEffect(() => {
     async function fetchRestaurants() {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userState.currentLatLng.lat},${userState.currentLatLng.lng}&radius=6047&type=restaurant&key=AIzaSyDyb_aKsyq5CtMO83PKMbTVL79kCLTxqc8`
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userState.currentLatLng.lat},${userState.currentLatLng.lng}&radius=6047&type=restaurant&key=${API_KEY}`
       );
       const data = await response.json();
-      setPermUpdated(true)
-      // console.log(data)
       const filteredRatings =
         data.results &&
         data.results.filter((place) =>
@@ -115,7 +138,6 @@ export default function App() {
             ? place
             : null
         );
-      //  console.log(filteredRatings);
       setNearbyRestaurants(filteredRatings);
     }
     fetchRestaurants();
@@ -145,6 +167,7 @@ export default function App() {
   }
   showCurrentLocation();
 
+
   const center = {
     lat: userState.currentLatLng.lat,
     lng: userState.currentLatLng.lng
@@ -161,9 +184,8 @@ export default function App() {
         center={center}
         options={options}
         onClick={onMapClick}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
         zoom={13}
+        onLoad={onLoad}
 
       >
         {/* PERSON-USER ICON */}
@@ -182,37 +204,16 @@ export default function App() {
         {newPlace.map((place) => (
           <AddNewModal
             key={`${place.lat}-${place.lng}`}
-            nearbyRestaurants={nearbyRestaurants}
+            // nearbyRestaurants={nearbyRestaurants}
             newPlaceLat={place.lat}
             newPlaceLng={place.lng}
-            permUpdated={permUpdated}
-          />
-        ))}
-
-        {/* {newPlace.map((marker) => (
-          <Marker
-            key={`${marker.lat}-${marker.lng}`}
-            position={{ lat: marker.lat, lng: marker.lng }}
-            onClick={() => {
-              setNewPlaceSelected(marker);
-            }}
-            icon={{
-              url: `/restaurant-icon.png`,
-              origin: new window.google.maps.Point(0, 0),
-              anchor: new window.google.maps.Point(20, 20),
-              scaledSize: new window.google.maps.Size(40, 40)
+            onAddRestaurant={(res) => {
+              setNearbyRestaurants([res, ...nearbyRestaurants]);
             }}
           />
         ))}
 
-        {newPlaceSelected ? (
-          <AddNewModal
-            key={newPlaceSelected.name}
-            nearbyRestaurants={nearbyRestaurants}
-            newPlaceSelected={newPlaceSelected}
-            setNewPlaceSelected={setNewPlaceSelected}
-          />
-        ) : null} */}
+
 
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
@@ -245,7 +246,7 @@ export default function App() {
             <div>
               <h4>{selectedRestaurants.name}</h4>
               <img
-                src={`https://maps.googleapis.com/maps/api/streetview?size=160x80&location=${selectedRestaurants.geometry.location.lat},${selectedRestaurants.geometry.location.lng}&fov=80&heading=70&pitch=0&key=AIzaSyDyb_aKsyq5CtMO83PKMbTVL79kCLTxqc8`}
+                src={`https://maps.googleapis.com/maps/api/streetview?size=160x80&location=${selectedRestaurants.geometry.location.lat},${selectedRestaurants.geometry.location.lng}&fov=80&heading=70&pitch=0&key=${API_KEY}`}
                 alt="restaurant-street-view"
               />
               <div style={{ color: "gold" }}>
@@ -299,6 +300,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
