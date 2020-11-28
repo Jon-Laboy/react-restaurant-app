@@ -54,6 +54,10 @@ export default function App() {
   const [infoWindowName, setInfoWindowName] = useState("");
 
 
+  
+ 
+  
+
   const reviewsArray = [
     `"Food/service was great!"`,
     `"This place was pretty good"`,
@@ -73,38 +77,54 @@ export default function App() {
     ]);
   }, []);
 
-
-  // const onLoad = React.useCallback(function callback(map) {
-
-  //     map.addListener('idle', function(){
-        
-  //       let bounds = map.getBounds()
-  //       let center = map.getCenter()
-  //       setBounds((state)=>({bounds:{...state,bounds}}))
-  //       console.log(bounds)
-  //       fetchRestaurants(center.lat(), center.lng(), radius)
-
-     
-  //     })
-  //     console.log('bounds')
-  // }, [])
+//  const getApiData = (lat, lng, radius) => {
+//     // Reset state of "isLoading", "apiData" and "restaurantsList" to avoid duplicated components
+//     // this.setState({
+//     //   isLoading: true,
+//     //   apiData: [],
+//     //   restaurantsList: []
+//     // });
+//     let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
+//     let apiPlacesData = [];
+//     // Fetch data from Places Search API
+//     fetch(apiPlaceSearchUrl)
+//       .then(response => response.ok ? response.json() : console.log("Fetch Place Search API data failed"))
+//       .then(data => {
+//         for (let result of data.results) {
+//           let apiPlaceDetailsUrl = placesDetailsApiEndpoint + result.place_id;
+//           // Fetch data from Places Details API
+//           fetch(apiPlaceDetailsUrl)
+//             .then(response => response.ok ? response.json() : console.log("Fetch Place Details API data failed"))
+//             .then(data => {
+//               // Add restaurant's data to an array and update the "restaurantsList"
+//               apiPlacesData.push(data);
+//               this.getRestaurantsList(this.state.minRating, this.state.maxRating, this.state.bounds);
+//             })
+//             .catch(err => console.log("Error when fetching Place Details API", err))
+//         }
+//       })
+//       .then(() => {
+//         // Once all data is fetched, set state of "apiData" and "isLoading"
+//         if (apiPlacesData != null) {
+//           this.setState({
+//             apiData: apiPlacesData,
+//             isLoading: false
+//           });
+//         }
+//       })
+//       .catch(err => console.log("Error when fetching Place Search API", err));
+//   }
 
     const onLoad = (map) => {
       let bounds = map.getBounds()
       setMap(map)
-    // setBounds((prevState)=> ({...prevState, bounds}))
-    setBounds(bounds)
-
-      // setBounds(bounds)
+      setBounds(bounds)
     }
   
     const handleMapIdle = () => {
-      // console.log("map is ready")
       const bounds = map.getBounds();
       const center = map.getCenter(); 
-      // setBounds((prevState)=> ({...prevState, bounds}))
       setBounds(bounds)
-      // console.log(bounds)
       fetchRestaurants(center.lat(), center.lng(), radius)
       
     }
@@ -157,7 +177,7 @@ export default function App() {
       navigator.geolocation.getCurrentPosition((position) => {
         setCenter((prevState) => ({
           
-            ...prevState,
+            ...prevState.currentLatLng,
             lat: position.coords.latitude,
             lng: position.coords.longitude
           

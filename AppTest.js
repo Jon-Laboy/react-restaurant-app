@@ -28,7 +28,6 @@ const options = {
   zoomControl: true
 };
 
-const placesSearchApiEndpoint = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?type=restaurant&keyword=restaurant&key=" + API_KEY;
 // APP COMPONENT
 export default function App() {
   const { isLoaded, loadError } = useLoadScript({
@@ -38,10 +37,8 @@ export default function App() {
 
 
   const [center, setCenter]= useState({lat:0,lng:0})
-  const [bounds, setBounds]= useState({})
-  const [map, setMap] = useState(null)
+//   const [center, setCenter] = useState({lat:0,lng:0})
 
-  const radius = 6047;
   const [newPlace, setNewPlace] = useState([]);
 
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
@@ -54,12 +51,89 @@ export default function App() {
   const [infoWindowName, setInfoWindowName] = useState("");
 
 
+  const [map, setMap] = useState(null)
+ 
+  const [bounds, setBounds]= useState(null)
+
   const reviewsArray = [
     `"Food/service was great!"`,
     `"This place was pretty good"`,
     `"We had an okay experience"`,
     `"Did not have a great experience"`
   ];
+
+  // ONLOAD FUNCTION WHERE I GET BOUNDS/////////////////////////////////////////////
+
+  const onLoad = React.useCallback(function callback(map) {
+    // let bounds = map.getBounds();
+    setMap(map);
+    // setBounds(bounds);
+    
+    // console.log(bounds)
+    map.addListener('idle', ()=> {
+      let bounds = map.getBounds();
+      let center = map.getCenter();
+      // setBounds(bounds)
+      console.log(bounds)
+      console.log(center)
+    })
+    /**
+  * Set the state of "bounds" and update the list of restaurants when the map gets 
+  * in the idle state (after zoom or drag-n-drop)
+  * 
+  */
+    // handleMapIdle = () => {
+    //   const bounds = this.state.map.getBounds();
+    //   const center = this.state.map.getCenter();
+    //   this.setState({ bounds: bounds });
+    //   !this.state.isMarkerClicked && this.getApiData(center.lat(), center.lng(), this.state.radius);
+    // }
+    //NEEDED IDLE EVENT TO THEN REQUEST BOUNDS MAKING IT NOT 'UNDEFINED'/////////////////
+    // map.addListener('idle', function () {
+
+    //   let bounds = map.getBounds();
+    //   // setBounds(bounds)
+      
+    //   let ne = bounds.getNorthEast();
+    //   let sw = bounds.getSouthWest();
+    //   let nw = new window.google.maps.LatLng(ne.lat(), sw.lng());
+    //   let se = new window.google.maps.LatLng(sw.lat(), ne.lng());
+    //   // console.log(se.lat())
+
+    //   //FUNCTION TO FIND AREA OF THE BOUNDS AS REFERRED FROM https://stackoverflow.com/questions/34447415/how-to-find-out-the-area-in-google-maps-api /////// 
+    //   function getDistanceInMeters(location1, location2) {
+    //     let lat1 = location1.lat();
+    //     let lon1 = location1.lng();
+
+    //     let lat2 = location2.lat();
+    //     let lon2 = location2.lng();
+
+    //     let R = 6371; // Radius of the earth in km
+    //     let dLat = deg2rad(lat2 - lat1);
+    //     let dLon = deg2rad(lon2 - lon1);
+    //     let a =
+    //       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    //       Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    //       Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    //     let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //     let d = R * c; // Distance in km
+    //     return (d * 1000);
+
+    //     function deg2rad(deg) {
+    //       return deg * (Math.PI / 180);
+    //     }
+    //   }
+
+    //   let length = getDistanceInMeters(sw, nw);
+    //   let breadth = getDistanceInMeters(sw, se);
+
+    //   let area = length * breadth; // in square meters
+
+
+    //   // console.log(area)
+
+    // });
+  }, [])
 
 
   // SET NEW PLACES/MARKERS ON MAPCLICK
@@ -74,47 +148,12 @@ export default function App() {
   }, []);
 
 
-  // const onLoad = React.useCallback(function callback(map) {
-
-  //     map.addListener('idle', function(){
-        
-  //       let bounds = map.getBounds()
-  //       let center = map.getCenter()
-  //       setBounds((state)=>({bounds:{...state,bounds}}))
-  //       console.log(bounds)
-  //       fetchRestaurants(center.lat(), center.lng(), radius)
-
-     
-  //     })
-  //     console.log('bounds')
-  // }, [])
-
-    const onLoad = (map) => {
-      let bounds = map.getBounds()
-      setMap(map)
-    // setBounds((prevState)=> ({...prevState, bounds}))
-    setBounds(bounds)
-
-      // setBounds(bounds)
-    }
-  
-    const handleMapIdle = () => {
-      // console.log("map is ready")
-      const bounds = map.getBounds();
-      const center = map.getCenter(); 
-      // setBounds((prevState)=> ({...prevState, bounds}))
-      setBounds(bounds)
-      // console.log(bounds)
-      fetchRestaurants(center.lat(), center.lng(), radius)
-      
-    }
-
-    
-    //  FETCH NEARBY RESTAURANTS DATA
-  
-    async function fetchRestaurants(lat,lng,radius) {
-        let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
-      const response = await fetch(apiPlaceSearchUrl);
+  // USEEFFECT TO FETCH NEARBY RESTAURANTS
+  useEffect(() => {
+    async function fetchRestaurants() {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=6047&type=restaurant&key=${API_KEY}`
+      );
       const data = await response.json();
       const filteredRatings =
         data.results &&
@@ -125,30 +164,13 @@ export default function App() {
         );
       setNearbyRestaurants(filteredRatings);
     }
-    
-  // USEEFFECT TO FETCH NEARBY RESTAURANTS
-  // useEffect(() => {
-  //   async function fetchRestaurants() {
-  //     const response = await fetch(
-  //       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=6047&type=restaurant&key=${API_KEY}`
-  //     );
-  //     const data = await response.json();
-  //     const filteredRatings =
-  //       data.results &&
-  //       data.results.filter((place) =>
-  //         place.rating >= firstRating && place.rating <= secondRating
-  //           ? place
-  //           : null
-  //       );
-  //     setNearbyRestaurants(filteredRatings);
-  //   }
-  //   fetchRestaurants();
-  // }, [
-  //   center.lat,
-  //   center.lng,
-  //   firstRating,
-  //   secondRating
-  // ]);
+    fetchRestaurants();
+  }, [
+    center.lat,
+    center.lng,
+    firstRating,
+    secondRating
+  ]);
 
 
   // SHOW USER'S GEO-LOCATION
@@ -157,7 +179,7 @@ export default function App() {
       navigator.geolocation.getCurrentPosition((position) => {
         setCenter((prevState) => ({
           
-            ...prevState,
+            ...prevState.currentLatLng,
             lat: position.coords.latitude,
             lng: position.coords.longitude
           
@@ -170,7 +192,7 @@ export default function App() {
   showCurrentLocation();
 
 
-  const mapCenter = {
+  const center = {
     lat: center.lat,
     lng: center.lng
   };
@@ -183,12 +205,11 @@ export default function App() {
       <h1>Restaurant Review</h1>
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
+        center={center}
         options={options}
         onClick={onMapClick}
         zoom={13}
         onLoad={onLoad}
-        onIdle={handleMapIdle}
 
       >
         {/* PERSON-USER ICON */}
