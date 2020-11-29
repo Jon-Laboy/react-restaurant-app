@@ -38,6 +38,8 @@ export default function App() {
 
 
   const [center, setCenter]= useState({lat:0,lng:0})
+
+  //**************************************ADDED STATE TO BOUNDS AND MAP */
   const [bounds, setBounds]= useState({})
   const [map, setMap] = useState(null)
 
@@ -73,37 +75,37 @@ export default function App() {
     ]);
   }, []);
 
-
+ // *********************** OLD WAY OF USING ONLOAD AS REFERENCED IN THE API DOCS
   // const onLoad = React.useCallback(function callback(map) {
-
   //     map.addListener('idle', function(){
         
   //       let bounds = map.getBounds()
   //       let center = map.getCenter()
   //       setBounds((state)=>({bounds:{...state,bounds}}))
   //       console.log(bounds)
-  //       fetchRestaurants(center.lat(), center.lng(), radius)
-
-     
+  //       fetchRestaurants(center.lat(), center.lng(), radius)    
   //     })
   //     console.log('bounds')
   // }, [])
+
+  //******************CREATED SEPERATE ONLOAD AND ONIDLE FUNCTIONS LIKE THE MAP EXAMPLE SENT TO ME */
+  //*******STILL CANNOT ACCESS THE MAP OBJECT TO GET OR SET BOUNDS ON THE ONLOAD FUNCTION-- TRIED SETBOUNDS(BOUNDS) AND ALSO SPREAD IN THE PREVIOUS STATE OF BOUNDS AND SET IT WITH NO LUCK */
 
     const onLoad = (map) => {
       let bounds = map.getBounds()
       setMap(map)
     // setBounds((prevState)=> ({...prevState, bounds}))
     setBounds(bounds)
-
-      // setBounds(bounds)
     }
   
+      //*******LIKE IN EXAMPLE - ATTEMPTED TO FETCHRESTAURANTS DYNAMICALLY ON MAP IDLE */
+    //*** SETTING BOUNDS HERE SEEMS TO BREAK THE SITE --- ALSO WHEN I DRAG THE MAP IT THEN AUTOMATICALLY RECENTERS ON ORIGINAL POSITION */
     const handleMapIdle = () => {
       // console.log("map is ready")
       const bounds = map.getBounds();
       const center = map.getCenter(); 
       // setBounds((prevState)=> ({...prevState, bounds}))
-      setBounds(bounds)
+      // setBounds(bounds)
       // console.log(bounds)
       fetchRestaurants(center.lat(), center.lng(), radius)
       
@@ -111,6 +113,9 @@ export default function App() {
 
     
     //  FETCH NEARBY RESTAURANTS DATA
+
+    //****************** ATTEMPTED TO REFERENCE EXAMPLE AND MADE THE FETCH FUNCTION MORE DYNAMIC WITH PARAMETERS LAT/LNG/RADIUS LIKE IN EXAMPLE I THEN CALL IT ON THE HANDLEMAPIDLE FUNCTION */
+    //****************** I WAS UNABLE TO KEEP THIS ASYNC FUNCTION IN 'USEEFFECT' BECAUSE I COULD NOT THEN ACCESS IT IN THE 'HANDLEMAPIDLE' -- BUT NOW I THINK IT CALLS CONTINOUSLY */
   
     async function fetchRestaurants(lat,lng,radius) {
         let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
