@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./styles.css";
 import {
   GoogleMap,
@@ -39,7 +39,9 @@ export default function App() {
 
   const [center, setCenter]= useState({lat:0,lng:0})
 
-  //**************************************ADDED STATE TO BOUNDS AND MAP */
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newPosition, setNewPosition] = useState(null);
+
   const [bounds, setBounds]= useState({})
   const [map, setMap] = useState(null)
 
@@ -65,62 +67,42 @@ export default function App() {
 
 
   // SET NEW PLACES/MARKERS ON MAPCLICK
-  const onMapClick = React.useCallback((e) => {
-    setNewPlace((current) => [
-      ...current,
-      {
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng()
-      }
-    ]);
-  }, []);
+  const onMapClick = (e) => {
+    setNewPosition({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng()
+    });
+    setShowAddModal(true);
+  };
 
- // *********************** OLD WAY OF USING ONLOAD AS REFERENCED IN THE API DOCS
-  // const onLoad = React.useCallback(function callback(map) {
-  //     map.addListener('idle', function(){
-        
-  //       let bounds = map.getBounds()
-  //       let center = map.getCenter()
-  //       setBounds((state)=>({bounds:{...state,bounds}}))
-  //       console.log(bounds)
-  //       fetchRestaurants(center.lat(), center.lng(), radius)    
-  //     })
-  //     console.log('bounds')
-  // }, [])
-
-  //******************CREATED SEPERATE ONLOAD AND ONIDLE FUNCTIONS LIKE THE MAP EXAMPLE SENT TO ME */
-  //*******STILL CANNOT ACCESS THE MAP OBJECT TO GET OR SET BOUNDS ON THE ONLOAD FUNCTION-- TRIED SETBOUNDS(BOUNDS) AND ALSO SPREAD IN THE PREVIOUS STATE OF BOUNDS AND SET IT WITH NO LUCK */
 
     const onLoad = (map) => {
       let bounds = map.getBounds()
       setMap(map)
-    // setBounds((prevState)=> ({...prevState, bounds}))
-    setBounds(bounds)
-    }
-  
-      //*******LIKE IN EXAMPLE - ATTEMPTED TO FETCHRESTAURANTS DYNAMICALLY ON MAP IDLE */
-    //*** SETTING BOUNDS HERE SEEMS TO BREAK THE SITE --- ALSO WHEN I DRAG THE MAP IT THEN AUTOMATICALLY RECENTERS ON ORIGINAL POSITION */
+      setBounds(bounds)
+    };
+
+    const closeAddModal = () => {
+      setShowAddModal(false);
+      setNewPosition(null);
+    };
+
+
     const handleMapIdle = () => {
-      // console.log("map is ready")
       const bounds = map.getBounds();
-      const center = map.getCenter(); 
-      // setBounds((prevState)=> ({...prevState, bounds}))
-      // setBounds(bounds)
-      // console.log(bounds)
+      const center = map.getCenter();
       fetchRestaurants(center.lat(), center.lng(), radius)
-      
+
     }
 
-    
-    //  FETCH NEARBY RESTAURANTS DATA
 
-    //****************** ATTEMPTED TO REFERENCE EXAMPLE AND MADE THE FETCH FUNCTION MORE DYNAMIC WITH PARAMETERS LAT/LNG/RADIUS LIKE IN EXAMPLE I THEN CALL IT ON THE HANDLEMAPIDLE FUNCTION */
-    //****************** I WAS UNABLE TO KEEP THIS ASYNC FUNCTION IN 'USEEFFECT' BECAUSE I COULD NOT THEN ACCESS IT IN THE 'HANDLEMAPIDLE' -- BUT NOW I THINK IT CALLS CONTINOUSLY */
-  
+    //  FETCH NEARBY RESTAURANTS DATA
     async function fetchRestaurants(lat,lng,radius) {
-        let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
+
+      let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
       const response = await fetch(apiPlaceSearchUrl);
       const data = await response.json();
+
       const filteredRatings =
         data.results &&
         data.results.filter((place) =>
@@ -128,32 +110,14 @@ export default function App() {
             ? place
             : null
         );
-      setNearbyRestaurants(filteredRatings);
+      console.log(filteredRatings);
+
+      setNearbyRestaurants((current) => ([
+              ...current,
+              ...filteredRatings
+            ]
+        ));
     }
-    
-  // USEEFFECT TO FETCH NEARBY RESTAURANTS
-  // useEffect(() => {
-  //   async function fetchRestaurants() {
-  //     const response = await fetch(
-  //       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=6047&type=restaurant&key=${API_KEY}`
-  //     );
-  //     const data = await response.json();
-  //     const filteredRatings =
-  //       data.results &&
-  //       data.results.filter((place) =>
-  //         place.rating >= firstRating && place.rating <= secondRating
-  //           ? place
-  //           : null
-  //       );
-  //     setNearbyRestaurants(filteredRatings);
-  //   }
-  //   fetchRestaurants();
-  // }, [
-  //   center.lat,
-  //   center.lng,
-  //   firstRating,
-  //   secondRating
-  // ]);
 
 
   // SHOW USER'S GEO-LOCATION
@@ -161,11 +125,11 @@ export default function App() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         setCenter((prevState) => ({
-          
+
             ...prevState,
             lat: position.coords.latitude,
             lng: position.coords.longitude
-          
+
         }));
       });
     } else {
@@ -173,12 +137,6 @@ export default function App() {
     }
   }
   showCurrentLocation();
-
-
-  const mapCenter = {
-    lat: center.lat,
-    lng: center.lng
-  };
 
   if (loadError) return "Error loading map";
   if (!isLoaded) return "Loading...";
@@ -188,10 +146,10 @@ export default function App() {
       <h1>Restaurant Review</h1>
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
+        center={center}
         options={options}
         onClick={onMapClick}
-        zoom={13}
+        zoom={14}
         onLoad={onLoad}
         onIdle={handleMapIdle}
 
@@ -209,19 +167,23 @@ export default function App() {
         />
 
         {/* NEW RESTARUANTS MARKERS AND INFOWINDOW */}
-        {newPlace.map((place) => (
+        {
+          newPosition &&
           <AddNewModal
-            key={`${place.lat}-${place.lng}`}
-            // nearbyRestaurants={nearbyRestaurants}
-            newPlaceLat={place.lat}
-            newPlaceLng={place.lng}
-            onAddRestaurant={(res) => {
-              setNearbyRestaurants([res, ...nearbyRestaurants]);
-            }}
+              visible={showAddModal}
+              newPlaceLat={newPosition.lat}
+              newPlaceLng={newPosition.lng}
+              onAddRestaurant={(res) => {
+                setNearbyRestaurants([res, ...nearbyRestaurants]);
+
+                console.log(nearbyRestaurants);
+                closeAddModal();
+              }}
+              closeModal={() => {
+                closeAddModal();
+              }}
           />
-        ))}
-
-
+        }
 
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (

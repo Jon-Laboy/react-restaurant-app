@@ -8,6 +8,7 @@ function FilterRatings({
 }) {
   function changeFirstRating(e) {
     setFirstRating(e.target.value);
+    console.log(firstRating)
   }
 
   function changeSecondRating(e) {
