@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 import {
   GoogleMap,
@@ -45,8 +45,8 @@ export default function App() {
   const [bounds, setBounds]= useState({})
   const [map, setMap] = useState(null)
 
-  const radius = 6047;
-  const [newPlace, setNewPlace] = useState([]);
+  const radius = 3047;
+  // const [newPlace, setNewPlace] = useState([]);
 
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState(null);
@@ -110,14 +110,34 @@ export default function App() {
             ? place
             : null
         );
-      console.log(filteredRatings);
+      // console.log(filteredRatings);
 
       setNearbyRestaurants((current) => ([
               ...current,
               ...filteredRatings
             ]
         ));
+      // setNearbyRestaurants(filteredRatings)
     }
+      
+    //UseEffect function to fetch the restaurants when the ratings immediately change
+      useEffect(() => {
+        async function restaurantsByRating(lat,lng,radius) {
+          let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
+          const response = await fetch(apiPlaceSearchUrl);
+          const data = await response.json();
+
+          const filteredRatings =
+            data.results &&
+            data.results.filter((place) =>
+              place.rating >= firstRating && place.rating <= secondRating
+                ? place
+                : null
+            );
+            setNearbyRestaurants(filteredRatings)
+            }
+            restaurantsByRating(center.lat, center.lng, radius)
+      }, [firstRating, secondRating])
 
 
   // SHOW USER'S GEO-LOCATION
@@ -176,7 +196,7 @@ export default function App() {
               onAddRestaurant={(res) => {
                 setNearbyRestaurants([res, ...nearbyRestaurants]);
 
-                console.log(nearbyRestaurants);
+                // console.log(nearbyRestaurants);
                 closeAddModal();
               }}
               closeModal={() => {
