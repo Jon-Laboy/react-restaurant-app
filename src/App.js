@@ -46,7 +46,6 @@ export default function App() {
   const [map, setMap] = useState(null)
 
   const radius = 3047;
-  // const [newPlace, setNewPlace] = useState([]);
 
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState(null);
@@ -65,7 +64,6 @@ export default function App() {
     `"Did not have a great experience"`
   ];
 
-
   // SET NEW PLACES/MARKERS ON MAPCLICK
   const onMapClick = (e) => {
     setNewPosition({
@@ -75,7 +73,7 @@ export default function App() {
     setShowAddModal(true);
   };
 
-
+// ONMAP LOAD GET MAPBOUNDS
     const onLoad = (map) => {
       let bounds = map.getBounds()
       setMap(map)
@@ -87,7 +85,7 @@ export default function App() {
       setNewPosition(null);
     };
 
-
+// ON IDLE FETCH NEW RESTAURANTS WITHIN THE BOUNDS
     const handleMapIdle = () => {
       const bounds = map.getBounds();
       const center = map.getCenter();
@@ -96,7 +94,7 @@ export default function App() {
     }
 
 
-    //  FETCH NEARBY RESTAURANTS DATA
+ //  FETCH NEARBY RESTAURANTS DATA FUNCTION
     async function fetchRestaurants(lat,lng,radius) {
 
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
@@ -110,17 +108,15 @@ export default function App() {
             ? place
             : null
         );
-      // console.log(filteredRatings);
 
       setNearbyRestaurants((current) => ([
               ...current,
               ...filteredRatings
             ]
         ));
-      // setNearbyRestaurants(filteredRatings)
     }
       
-    //UseEffect function to fetch the restaurants when the ratings immediately change
+  //UseEffect function to fetch the restaurants when the ratings immediately change
       useEffect(() => {
         async function restaurantsByRating(lat,lng,radius) {
           let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
@@ -169,7 +165,7 @@ export default function App() {
         center={center}
         options={options}
         onClick={onMapClick}
-        zoom={14}
+        zoom={13}
         onLoad={onLoad}
         onIdle={handleMapIdle}
 

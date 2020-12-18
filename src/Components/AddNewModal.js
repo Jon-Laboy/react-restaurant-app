@@ -34,8 +34,6 @@ class AddNewModal extends Component {
         }
       }
     };
-    //UNSHIFT VALUES TO RESTAURANTLIST
-    // return this.props.nearbyRestaurants.unshift(newRestaurantObj);
     return this.props.onAddRestaurant(newRestaurantObj)
   }
   render() {
