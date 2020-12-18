@@ -11,6 +11,7 @@ import mapStyles from "./mapStyles";
 import StarRatings from "react-star-ratings";
 import FilterRatings from "./Components/FilterRatings";
 import RestaurantList from "./Components/RestaurantList";
+import { v4 as uuidv4 } from 'uuid';
 
 // GLOBAL VARIABLES
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -42,7 +43,7 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPosition, setNewPosition] = useState(null);
 
-  const [bounds, setBounds]= useState({})
+  // const [bounds, setBounds]= useState({})
   const [map, setMap] = useState(null)
 
   const radius = 3047;
@@ -75,9 +76,9 @@ export default function App() {
 
 // ONMAP LOAD GET MAPBOUNDS
     const onLoad = (map) => {
-      let bounds = map.getBounds()
+      // let bounds = map.getBounds()
       setMap(map)
-      setBounds(bounds)
+      // setBounds(bounds)
     };
 
     const closeAddModal = () => {
@@ -87,7 +88,7 @@ export default function App() {
 
 // ON IDLE FETCH NEW RESTAURANTS WITHIN THE BOUNDS
     const handleMapIdle = () => {
-      const bounds = map.getBounds();
+      // const bounds = map.getBounds();
       const center = map.getCenter();
       fetchRestaurants(center.lat(), center.lng(), radius)
 
@@ -133,7 +134,7 @@ export default function App() {
             setNearbyRestaurants(filteredRatings)
             }
             restaurantsByRating(center.lat, center.lng, radius)
-      }, [firstRating, secondRating])
+      }, [firstRating, secondRating, center.lat, center.lng])
 
 
   // SHOW USER'S GEO-LOCATION
@@ -204,6 +205,7 @@ export default function App() {
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
           <Marker
+            key={uuidv4()}
             position={{
               lat: place.geometry.location.lat,
               lng: place.geometry.location.lng
@@ -277,7 +279,7 @@ export default function App() {
 
         {/* RESTAURANT LIST */}
         <RestaurantList
-          key={nearbyRestaurants}
+          key= {uuidv4()}
           nearbyRestaurants={nearbyRestaurants}
           setQuery={setQuery}
           setInfoWindowName={setInfoWindowName}
