@@ -99,9 +99,9 @@ export default function App() {
 
  //  FETCH NEARBY RESTAURANTS DATA FUNCTION
     async function fetchRestaurants(lat,lng,radius) {
-
+      const proxyurl = "https://cors-anywhere.herokuapp.com/";
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
-      const response = await fetch(apiPlaceSearchUrl);
+      const response = await fetch(proxyurl + apiPlaceSearchUrl);
       const data = await response.json();
 
       const filteredRatings =
@@ -122,8 +122,9 @@ export default function App() {
   //UseEffect function to fetch the restaurants when the ratings immediately change
       useEffect(() => {
         async function restaurantsByRating(lat,lng,radius) {
+          const proxyurl = "https://cors-anywhere.herokuapp.com/";
           let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
-          const response = await fetch(apiPlaceSearchUrl);
+          const response = await fetch(proxyurl + apiPlaceSearchUrl);
           const data = await response.json();
 
           const filteredRatings =
