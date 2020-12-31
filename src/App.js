@@ -76,11 +76,13 @@ export default function App() {
     setShowAddModal(true);
   };
 
-// ONMAP LOAD GET MAPBOUNDS
+// ONMAP LOAD GET MAPBOUNDS and Fetch Restaurants 
     const onLoad = (map) => {
       let bounds = map.getBounds()
+      const center = map.getCenter();
       setMap(map)
       setBounds(bounds)
+      fetchRestaurants(center.lat(), center.lng(), radius)
     };
 
     const closeAddModal = () => {
@@ -88,8 +90,8 @@ export default function App() {
       setNewPosition(null);
     };
 
-// ON IDLE FETCH NEW RESTAURANTS WITHIN THE BOUNDS
-    const handleMapIdle = () => {
+// ON DRAGEND FETCH NEW RESTAURANTS WITHIN THE BOUNDS
+    const handleMapDrag = () => {
       const bounds = map.getBounds();
       const center = map.getCenter();
       fetchRestaurants(center.lat(), center.lng(), radius)
@@ -171,7 +173,7 @@ export default function App() {
         onClick={onMapClick}
         zoom={13}
         onLoad={onLoad}
-        onIdle={handleMapIdle}
+        onDragEnd={handleMapDrag}
 
       >
         {/* PERSON-USER ICON */}
