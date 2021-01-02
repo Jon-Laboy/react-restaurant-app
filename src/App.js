@@ -119,7 +119,7 @@ export default function App() {
         ));
     }
       
-  //UseEffect function to fetch the restaurants when the ratings immediately change
+  //UseEffect Function to fetch the restaurants when the ratings immediately change
       useEffect(() => {
         async function restaurantsByRating(lat,lng,radius) {
           const proxyurl = "https://cors-anywhere.herokuapp.com/";
