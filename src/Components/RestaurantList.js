@@ -1,18 +1,22 @@
 import React from "react";
 import StarRatings from "react-star-ratings";
 import AddReview from "./AddReview";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+
+function sortAlphabetically(a, b) {
+  return a.name.localeCompare(b.name);
+}
 
 export default function RestaurantList({
   nearbyRestaurants,
   setQuery,
-  setInfoWindowName
+  setInfoWindowName,
 }) {
   return (
     <div className="restaurant-list">
       <ul>
         <li className="list-header">Restaurants</li>
-        {nearbyRestaurants.map((place) => (
+        {nearbyRestaurants.sort(sortAlphabetically).map((place) => (
           <div key={uuidv4()}>
             <li>
               <div style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
