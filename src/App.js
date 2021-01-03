@@ -114,12 +114,19 @@ export default function App() {
             : null
         );
 
-      setNearbyRestaurants((current) => ([
-              ...current,
-              ...filteredRatings
-            ]
-        ));
-    }
+    // take this filtered ratings and if they are already loaded do not fetch them again
+    const newFiltered = filteredRatings.filter((place) => {
+      if(place.name){
+        return null
+      }else
+      return place
+    })
+    setNearbyRestaurants((current) => ([
+            ...current,
+            ...newFiltered
+          ]
+      ));
+  }
       
   //UseEffect function to fetch the restaurants when the ratings immediately change
       useEffect(() => {
