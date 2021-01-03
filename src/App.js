@@ -100,34 +100,33 @@ export default function App() {
 
 
  //  FETCH NEARBY RESTAURANTS DATA FUNCTION
-    async function fetchRestaurants(lat,lng,radius) {
-      const proxyurl = "https://cors-anywhere.herokuapp.com/";
-      let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
-      const response = await fetch(proxyurl + apiPlaceSearchUrl);
-      const data = await response.json();
+ async function fetchRestaurants(lat,lng,radius) {
+  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
+  const response = await fetch(proxyurl + apiPlaceSearchUrl);
+  const data = await response.json();
 
-    //filter restuarants that are between selected ratings
-      const filteredRatings =
-        data.results &&
-        data.results.filter((place) =>
-          place.rating >= firstRating && place.rating <= secondRating
-            ? place
-            : null
-        );
+  const filteredRatings =
+    data.results &&
+    data.results.filter((place) =>
+      place.rating >= firstRating && place.rating <= secondRating
+        ? place
+        : null
+    );
 
-      // take this filtered ratings and if they are already loaded do not fetch them again
-      const newFiltered = filteredRatings.filter((place) => {
-        if(filteredRatings.name === place.name){
-          return null
-        }else
-        return place
-      })
-      setNearbyRestaurants((current) => ([
-              ...current,
-              ...newFiltered
-            ]
-        ));
-    }
+// take this filtered ratings and if they are already loaded do not fetch them again
+const newFiltered = filteredRatings.filter((place) => {
+  if(place.name){
+    return null
+  }else
+  return place
+})
+setNearbyRestaurants((current) => ([
+        ...current,
+        ...newFiltered
+      ]
+  ));
+}
       
   //UseEffect function to fetch the restaurants when the ratings immediately change
       useEffect(() => {
