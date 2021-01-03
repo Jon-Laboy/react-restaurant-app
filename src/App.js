@@ -205,7 +205,7 @@ export default function App() {
           />
         }
 
-        {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
+        {/* NEARBY RESTAURANT MARKERS and INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
           <Marker
             key={uuidv4()}
