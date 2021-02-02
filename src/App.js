@@ -106,6 +106,7 @@ export default function App() {
       const response = await fetch(proxyurl + apiPlaceSearchUrl);
       const data = await response.json();
 
+      //filter restaurants by user rating range ex(3 out of 5)
       const filteredRatings =
         data.results &&
         data.results.filter((place) =>
@@ -113,17 +114,17 @@ export default function App() {
             ? place
             : null
         );
-
+      console.log(filteredRatings)
     // take this filtered ratings and if they are already loaded do not fetch them again
-    const newFiltered = filteredRatings.filter((place) => {
-      if(place.name){
-        return null
-      }else
-      return place
-    })
+    // const newFiltered = filteredRatings.filter((place) => {
+    //   if(place.name){
+    //     return null
+    //   }else
+    //   return place
+    // })
     setNearbyRestaurants((current) => ([
             ...current,
-            ...newFiltered
+            ...filteredRatings
           ]
       ));
   }
