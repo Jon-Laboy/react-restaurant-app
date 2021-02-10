@@ -101,6 +101,9 @@ export default function App() {
 
  //  FETCH NEARBY RESTAURANTS DATA FUNCTION
     async function fetchRestaurants(lat,lng,radius) {
+      
+   // Reset state of "nearbyRestaurants" to avoid duplicated components
+      setNearbyRestaurants([]);
       const proxyurl = "https://cors-anywhere.herokuapp.com/";
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
       const response = await fetch(proxyurl + apiPlaceSearchUrl);
@@ -115,13 +118,7 @@ export default function App() {
             : null
         );
       console.log(filteredRatings)
-    // take this filtered ratings and if they are already loaded do not fetch them again
-    // const newFiltered = filteredRatings.filter((place) => {
-    //   if(place.name){
-    //     return null
-    //   }else
-    //   return place
-    // })
+
     setNearbyRestaurants((current) => ([
             ...current,
             ...filteredRatings

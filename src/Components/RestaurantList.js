@@ -16,6 +16,7 @@ export default function RestaurantList({
     <div className="restaurant-list">
       <ul>
         <li className="list-header">Restaurants</li>
+      
         {nearbyRestaurants.sort(sortAlphabetically).map((place) => (
           <div key={uuidv4()}>
             <li>
