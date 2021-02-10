@@ -102,7 +102,7 @@ export default function App() {
  //  FETCH NEARBY RESTAURANTS DATA FUNCTION
     async function fetchRestaurants(lat,lng,radius) {
       
-   // Reset state of "nearbyRestaurants" to avoid duplicated components
+   // Reset state of "nearbyRestaurants" to avoid duplicated places fetched
       setNearbyRestaurants([]);
       const proxyurl = "https://cors-anywhere.herokuapp.com/";
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
