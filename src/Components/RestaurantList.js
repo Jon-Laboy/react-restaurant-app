@@ -17,7 +17,7 @@ export default function RestaurantList({
     <div className="restaurant-list">
       <ul>
         <li className="list-header">Restaurants</li>
-        {nearbyRestaurants.length === 0 ? <li>Loading....</li>: nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
+        {nearbyRestaurants.length === 0 ? <li style = {{height: "100vh", fontSize: "3rem", textAlign:"center"}}>Loading.....</li>: nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
           <div key= {place.place_id}>
             <li>
               <div style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
