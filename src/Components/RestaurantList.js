@@ -9,11 +9,10 @@ export default function RestaurantList({
   setQuery,
   setInfoWindowName,
 }) {
-
+  
   function sortAlphabetically(a, b) {
     return a.name.localeCompare(b.name);
   }
-  
   return (
     <div className="restaurant-list">
       <ul>
