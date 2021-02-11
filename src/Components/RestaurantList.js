@@ -1,7 +1,6 @@
 import React from "react";
 import StarRatings from "react-star-ratings";
 import AddReview from "./AddReview";
-import { v4 as uuidv4 } from 'uuid';
 
 export default function RestaurantList({
   nearbyRestaurants,
@@ -17,7 +16,7 @@ export default function RestaurantList({
       <ul>
         <li className="list-header">Restaurants</li>
         {nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
-          <div key= {uuidv4()}>
+          <div key= {place.place_id}>
             <li>
               <div style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
                 {place.name}

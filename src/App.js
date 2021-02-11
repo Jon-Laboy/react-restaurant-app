@@ -11,7 +11,6 @@ import mapStyles from "./mapStyles";
 import StarRatings from "react-star-ratings";
 import FilterRatings from "./Components/FilterRatings";
 import RestaurantList from "./Components/RestaurantList";
-import { v4 as uuidv4 } from 'uuid';
 
 // GLOBAL VARIABLES
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -204,7 +203,7 @@ export default function App() {
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
           <Marker
-            key={uuidv4()}
+            key={place.place_id}
             position={{
               lat: place.geometry.location.lat,
               lng: place.geometry.location.lng
@@ -278,7 +277,6 @@ export default function App() {
 
         {/* RESTAURANT LIST */}
         <RestaurantList
-          key={uuidv4()}
           nearbyRestaurants={nearbyRestaurants}
           setQuery={setQuery}
           setInfoWindowName={setInfoWindowName}
