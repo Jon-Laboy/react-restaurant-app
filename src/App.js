@@ -11,6 +11,7 @@ import mapStyles from "./mapStyles";
 import StarRatings from "react-star-ratings";
 import FilterRatings from "./Components/FilterRatings";
 import RestaurantList from "./Components/RestaurantList";
+import { v4 as uuidv4 } from 'uuid';
 
 // GLOBAL VARIABLES
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -42,7 +43,6 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPosition, setNewPosition] = useState(null);
 
-  const [bounds, setBounds]= useState({})
   const [map, setMap] = useState(null)
 
   const radius = 3047;
@@ -75,10 +75,8 @@ export default function App() {
 
 // ONMAP LOAD GET MAPBOUNDS
     const onLoad = (map) => {
-      let bounds = map.getBounds();
       const center = map.getCenter();
       setMap(map)
-      setBounds(bounds)
       fetchRestaurants(center.lat(), center.lng(), radius)
     };
 
@@ -89,7 +87,6 @@ export default function App() {
 
 // ON IDLE FETCH NEW RESTAURANTS WITHIN THE BOUNDS
     const handleMapDrag = () => {
-      const bounds = map.getBounds();
       const center = map.getCenter();
       fetchRestaurants(center.lat(), center.lng(), radius)
 
@@ -207,6 +204,7 @@ export default function App() {
         {/* NEARBY RESTAURANT MARKERS AND INFOWINDOWS */}
         {nearbyRestaurants.map((place) => (
           <Marker
+            key={uuidv4()}
             position={{
               lat: place.geometry.location.lat,
               lng: place.geometry.location.lng
@@ -280,7 +278,7 @@ export default function App() {
 
         {/* RESTAURANT LIST */}
         <RestaurantList
-          key={nearbyRestaurants}
+          key={uuidv4()}
           nearbyRestaurants={nearbyRestaurants}
           setQuery={setQuery}
           setInfoWindowName={setInfoWindowName}
