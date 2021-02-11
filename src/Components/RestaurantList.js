@@ -11,11 +11,13 @@ export default function RestaurantList({
   function sorthAlphabetically(a,b) {
     return a.name.localeCompare(b.name)
   }
+
+  
   return (
     <div className="restaurant-list">
       <ul>
         <li className="list-header">Restaurants</li>
-        {nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
+        {nearbyRestaurants.length === 0 ? <li>Loading....</li>: nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
           <div key= {place.place_id}>
             <li>
               <div style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
