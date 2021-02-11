@@ -7,11 +7,15 @@ export default function RestaurantList({
   setQuery,
   setInfoWindowName
 }) {
+
+  function sorthAlphabetically(a,b) {
+    return a.name.localeCompare(b.name)
+  }
   return (
     <div className="restaurant-list">
       <ul>
         <li className="list-header">Restaurants</li>
-        {nearbyRestaurants.map((place) => (
+        {nearbyRestaurants.sort(sorthAlphabetically).map((place) => (
           <div>
             <li>
               <div style={{ fontSize: "1.3rem", fontWeight: "bold" }}>

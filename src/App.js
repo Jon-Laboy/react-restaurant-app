@@ -96,7 +96,8 @@ export default function App() {
 
  //  FETCH NEARBY RESTAURANTS DATA FUNCTION
     async function fetchRestaurants(lat,lng,radius) {
-
+      // Reset state of "nearbyRestaurants" to avoid duplicated places fetched
+      setNearbyRestaurants([]);
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
       const response = await fetch(apiPlaceSearchUrl);
       const data = await response.json();
