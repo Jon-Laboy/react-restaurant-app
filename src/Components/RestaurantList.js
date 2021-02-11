@@ -3,15 +3,17 @@ import StarRatings from "react-star-ratings";
 import AddReview from "./AddReview";
 import { v4 as uuidv4 } from "uuid";
 
-function sortAlphabetically(a, b) {
-  return a.name.localeCompare(b.name);
-}
 
 export default function RestaurantList({
   nearbyRestaurants,
   setQuery,
   setInfoWindowName,
 }) {
+
+  function sortAlphabetically(a, b) {
+    return a.name.localeCompare(b.name);
+  }
+  
   return (
     <div className="restaurant-list">
       <ul>
