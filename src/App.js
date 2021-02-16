@@ -99,9 +99,8 @@ export default function App() {
       
    // Reset state of "nearbyRestaurants" to avoid duplicated places fetched
       setNearbyRestaurants([]);
-      const proxyurl = "https://cors-anywhere.herokuapp.com/";
       let apiPlaceSearchUrl = placesSearchApiEndpoint + "&location=" + lat + "," + lng + "&radius=" + radius;
-      const response = await fetch(proxyurl + apiPlaceSearchUrl);
+      const response = await fetch(apiPlaceSearchUrl);
       const data = await response.json();
 
       //filter restaurants by user rating range ex(3 out of 5)
