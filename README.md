@@ -5,4 +5,4 @@ In this project the user can view restaurants based on their geo-location. The u
 
 ## Web App
 
-<https://jon-laboy.github.io/react-restaurant-app/>
+<https://focused-hypatia-446a61.netlify.app/>
