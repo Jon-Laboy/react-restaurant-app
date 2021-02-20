@@ -5,4 +5,5 @@ In this project the user can view restaurants based on their geo-location. The u
 
 ## Web App
 
+***A CORS UNBLOCK OR CORS ALLOW EXTENSION WILL BE NEEDED TO SEE FETCHED RESTAURANTS***
 <https://focused-hypatia-446a61.netlify.app/>
