@@ -65,6 +65,10 @@ export default function App() {
     `"Did not have a great experience"`
   ];
 
+  // INSTALL EXTENSION ALERT 
+  useEffect(() => {
+   alert('Please install a CORS-UNBLOCK extension to view restaurants')
+  }, [])
   // SET NEW PLACES/MARKERS ON MAPCLICK
   const onMapClick = (e) => {
     setNewPosition({
@@ -111,7 +115,6 @@ export default function App() {
             ? place
             : null
         );
-      console.log(filteredRatings)
 
     setNearbyRestaurants((current) => ([
             ...current,

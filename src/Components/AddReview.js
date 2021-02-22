@@ -16,9 +16,6 @@ class AddReview extends Component {
       [e.target.name]: e.target.value
     });
     this.props.setInfoWindowName(e.target.name);
-
-    console.log(e.target.name);
-    console.log(e.target.value);
   }
 
   submitForm(e) {
